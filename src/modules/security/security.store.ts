@@ -1,17 +1,38 @@
 import create from 'zustand';
-import axios from 'axios';
+import { getCurrentUserAPI, loginAPI, logoutAllAPI, logoutAPI } from './security.api';
+import { UCurrentUser, ULoginRequest } from '../../types/universal.types';
 
-export type GlobalState = {
-  currentUser: UCurrentUser;
+export type SecurityState = {
+  currentUser: UCurrentUser | null;
+  login: (body: ULoginRequest) => Promise<void>;
+  logout: () => Promise<void>;
+  logoutAll: () => Promise<void>;
+  storeCurrentUser: () => Promise<void>;
+  removeLoginData: () => void;
 };
 
-export const useGlobalStore = create<GlobalState>((set, get) => ({
+export const useSecurityStore = create<SecurityState>((set, get) => ({
   currentUser: null,
+
+  async login(body) {
+    await loginAPI(body);
+    await get().storeCurrentUser();
+  },
+
+  async logout() {
+    await logoutAPI();
+    await get().removeLoginData();
+  },
+
+  async logoutAll() {
+    await logoutAllAPI();
+    await get().removeLoginData();
+  },
 
   async storeLoginData() {
     try {
       await get().storeCurrentUser();
-    } catch (err) {
+    } catch (err: any) {
       if (err?.response?.status === 401) {
         get().removeLoginData();
         return;
@@ -20,23 +41,8 @@ export const useGlobalStore = create<GlobalState>((set, get) => ({
     }
   },
 
-  removeLoginData(forceOpenSecurityModal = false) {
-    const { pathname } = window.location;
-    const page = pagesByPath[pathname];
-    localStorage.removeItem('authToken');
-    localStorage.removeItem('anonymousPost');
-    clearSentryUser();
-    globalSocket.disconnect();
-    if (forceOpenSecurityModal) {
-      window.location.href = `${pagesById[conferenceConfig.securityPageId].path}?openModal=login`;
-      return;
-    }
-    try {
-      set({ currentUser: null });
-      delete axios.defaults.headers.Authorization;
-    } catch (e) {
-      window.location.href = pagesById[conferenceConfig.securityPageId].path;
-    }
+  removeLoginData() {
+    set({ currentUser: null });
   },
 
   async storeCurrentUser() {

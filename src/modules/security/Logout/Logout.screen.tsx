@@ -1,19 +1,18 @@
-import React from 'react';
-import classes from './Logout.module.scss';
-import SecurityLayout from '../../../components/SecurityLayout/SecurityLayout';
-import { Input, TextField } from '@mui/material';
+import React, { useEffect } from 'react';
+import { useSecurityStore } from '../security.store';
+import { useNavigate } from 'react-router-dom';
+import { Paths } from '../../../types/global.types';
 
 
-export interface LogoutProps {
+const LogoutScreen: React.VFC = () => {
+  const logout = useSecurityStore((state) => state.logout);
+  const navigate = useNavigate();
 
-}
+  useEffect(() => {
+    logout().then(() => navigate(Paths.login));
+  }, [logout, navigate]);
 
-const Logout: React.VFC<LogoutProps> = () => {
-  return (
-    <SecurityLayout>
-      LOGOUT
-    </SecurityLayout>
-  );
+  return null;
 };
 
-export default Logout;
+export default LogoutScreen;

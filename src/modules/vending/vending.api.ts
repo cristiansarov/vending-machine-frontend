@@ -1,20 +1,32 @@
 import axios from 'axios';
-import { UCurrentUser, ULoginRequest, ULoginResponse } from '../../types/universal.types';
+import {
+  UBuyRequest,
+  UDepositRequest,
+  UGetDepositResponse,
+  UProductListItem,
+  UWithdrawResponse,
+} from '../../types/universal.types';
 
-export async function getCurrentUserAPI(): Promise<UCurrentUser> {
-  const { data } = await axios.get<UCurrentUser>('/security/profile');
+
+export async function getProductsAPI(): Promise<UProductListItem[]> {
+  const { data } = await axios.get<UProductListItem[]>('/product');
   return data;
 }
 
-export async function loginAPI(body: ULoginRequest): Promise<ULoginResponse> {
-  const { data } = await axios.post<ULoginResponse>('/security/login', body);
+export async function getDepositAmountAPI(): Promise<number> {
+  const { data: { deposit } } = await axios.get<UGetDepositResponse>('/vending/deposit');
+  return deposit;
+}
+
+export async function depositAPI(body: UDepositRequest): Promise<void> {
+  await axios.post<void>('/vending/deposit', body);
+}
+
+export async function buyAPI(body: UBuyRequest): Promise<void> {
+  await axios.post<void>('/vending/buy', body);
+}
+
+export async function withdrawAPI(): Promise<UWithdrawResponse> {
+  const { data } = await axios.post<UWithdrawResponse>('/vending/reset');
   return data;
-}
-
-export async function logoutAPI(): Promise<void> {
-  await axios.post<void>('/security/logout');
-}
-
-export async function logoutAllAPI(): Promise<void> {
-  await axios.post<void>('/security/logout/all');
 }

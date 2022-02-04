@@ -3,11 +3,7 @@ import { Grid, Container, Paper, Box } from '@mui/material';
 import Sidebar from './components/Sidebar';
 
 
-export interface LayoutProps {
-
-}
-
-const Layout: React.FC<LayoutProps> = ({ children }) => {
+const Layout: React.FC = ({ children }) => {
   return (
     <Container>
       <Box my={4}>
@@ -17,7 +13,9 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           </Grid>
           <Grid item xs={8}>
             <Paper>
-              {children}
+              <Box p={3} pt={2}>
+                {children}
+              </Box>
             </Paper>
           </Grid>
         </Grid>

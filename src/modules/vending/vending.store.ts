@@ -1,54 +1,64 @@
 import create from 'zustand';
-import { getCurrentUserAPI, loginAPI, logoutAllAPI, logoutAPI } from './security.api';
-import { UCurrentUser, ULoginRequest } from '../../types/universal.types';
+import { UProductListItem } from '../../types/universal.types';
+import { buyAPI, depositAPI, getDepositAmountAPI, getProductsAPI, withdrawAPI } from './vending.api';
 
-export type SecurityState = {
-  currentUser: UCurrentUser | null;
-  login: (body: ULoginRequest) => Promise<void>;
-  logout: () => Promise<void>;
-  logoutAll: () => Promise<void>;
-  storeCurrentUser: () => Promise<void>;
-  removeLoginData: () => void;
+export type VendingState = {
+  products: UProductListItem[];
+  storeProducts: () => Promise<void>;
+  fetchingProducts: boolean;
+  depositAmount: number;
+  storeDepositAmount: () => Promise<void>;
+  fetchingDeposit: boolean;
+  deposit: (amount: number) => Promise<void>;
+  buy: (productId: number) => Promise<void>;
+  withdraw: () => Promise<number[]>;
 };
 
-export const useSecurityStore = create<SecurityState>((set, get) => {
-  return ({
-    currentUser: null,
+export const useVendingStore = create<VendingState>((set, get) => ({
+  depositAmount: 0,
+  products: [],
+  fetchingProducts: false,
+  fetchingDeposit: false,
 
-    async login(body) {
-      await loginAPI(body);
-      await get().storeCurrentUser();
-    },
+  async storeProducts() {
+    set({ fetchingProducts: true });
+    set({
+      products: await getProductsAPI(),
+      fetchingProducts: false,
+    });
+  },
 
-    async logout() {
-      await logoutAPI();
-      await get().removeLoginData();
-    },
+  async storeDepositAmount() {
+    set({ fetchingDeposit: true });
+    set({
+      depositAmount: await getDepositAmountAPI(),
+      fetchingDeposit: false,
+    });
+  },
 
-    async logoutAll() {
-      await logoutAllAPI();
-      await get().removeLoginData();
-    },
+  async deposit(amount) {
+    await depositAPI({ amount });
+    set({
+      depositAmount: get().depositAmount + amount,
+    });
+  },
 
-    async storeLoginData() {
-      try {
-        await get().storeCurrentUser();
-      } catch (err: any) {
-        if (err?.response?.status === 401) {
-          get().removeLoginData();
-          return;
-        }
-        throw err;
-      }
-    },
+  async buy(productId) {
+    await buyAPI({ productId, amount: 1 });
+    const product = get().products.find((product) => product.id === productId)!;
+    set({
+      depositAmount: get().depositAmount - product.cost,
+      products: get().products.map((product) => (
+        product.id === productId ? {...product, amountAvailable: product.amountAvailable - 1 } : product
+      )),
+    });
+  },
 
-    removeLoginData() {
-      set({ currentUser: null });
-    },
-
-    async storeCurrentUser() {
-      const currentUser = await getCurrentUserAPI();
-      set({ currentUser });
-    },
-  });
-});
+  async withdraw() {
+    const { coinsReturned } = await withdrawAPI();
+    set({
+      depositAmount: 0,
+    });
+    return coinsReturned;
+  },
+}));

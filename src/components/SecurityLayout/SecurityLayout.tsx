@@ -1,29 +1,23 @@
 import React from 'react';
-import { Grid, Container, Paper, Box } from '@mui/material';
-import Sidebar from './components/Sidebar';
+import { Container, Paper, Box } from '@mui/material';
 
 
 export interface LayoutProps {
 
 }
 
-const Layout: React.FC<LayoutProps> = ({ children }) => {
+const SecurityLayout: React.FC<LayoutProps> = ({ children }) => {
   return (
-    <Container>
+    <Container maxWidth="xs">
       <Box my={4}>
-        <Grid container spacing={2}>
-          <Grid item xs={4}>
-            <Sidebar/>
-          </Grid>
-          <Grid item xs={8}>
-            <Paper>
-              {children}
-            </Paper>
-          </Grid>
-        </Grid>
+        <Paper>
+          <Box p={4}>
+            {children}
+          </Box>
+        </Paper>
       </Box>
     </Container>
   );
 };
 
-export default Layout;
+export default SecurityLayout;

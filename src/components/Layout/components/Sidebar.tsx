@@ -2,32 +2,29 @@ import React, { useMemo } from 'react';
 import MenuList from '@mui/material/MenuList';
 import MenuItem from '@mui/material/MenuItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
+import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import ListItemText from '@mui/material/ListItemText';
+import FastfoodIcon from '@mui/icons-material/Fastfood';
+import LogoutIcon from '@mui/icons-material/Logout';
 import Paper from '@mui/material/Paper';
-import ContentCut from '@mui/icons-material/ContentCut';
-import ContentCopy from '@mui/icons-material/ContentCopy';
-import ContentPaste from '@mui/icons-material/ContentPaste';
+import { Paths } from '../../../types/global.types';
+import { Link } from 'react-router-dom';
 
 
-export interface SidebarProps {
-
-}
-
-const Sidebar: React.VFC<SidebarProps> = () => {
-
+const Sidebar: React.VFC = () => {
   const menu = useMemo(() => [
-    { icon: ContentCut, label: 'Text 1' },
-    { icon: ContentCopy, label: 'Text 2' },
-    { icon: ContentPaste, label: 'Text 3' },
+    { icon: AttachMoneyIcon, label: 'Deposit', path: Paths.deposit },
+    { icon: FastfoodIcon, label: 'Products', path: Paths.products },
+    { icon: LogoutIcon, label: 'Logout', path: Paths.logout },
   ], []);
 
   return (
     <Paper>
       <MenuList>
-        {menu.map(({ icon: Icon, label }, k) => (
-          <MenuItem key={k}>
+        {menu.map(({ icon: Icon, label, path }, k) => (
+          <MenuItem component={Link} key={k} to={path}>
             <ListItemIcon>
-              <Icon fontSize="small" />
+              <Icon fontSize="small"/>
             </ListItemIcon>
             <ListItemText>{label}</ListItemText>
           </MenuItem>

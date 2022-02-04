@@ -1,8 +1,16 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+import axios from 'axios';
+
+
+axios.defaults.baseURL = 'http://localhost:3001';
+axios.defaults.withCredentials = true
+axios.interceptors.response.use(v=>v , (e) => {
+  alert(e.response?.data?.message || e.message);
+  return Promise.reject(e);
+});
 
 ReactDOM.render(
   <React.StrictMode>

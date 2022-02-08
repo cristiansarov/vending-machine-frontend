@@ -6,11 +6,7 @@ import { Navigate, useNavigate } from 'react-router-dom';
 import { Paths } from '../../../types/global.types';
 
 
-export interface LoginProps {
-
-}
-
-const LoginScreen: React.VFC<LoginProps> = () => {
+const LoginScreen: React.VFC = () => {
   const isLoggedIn = useSecurityStore((state) => !!state.currentUser);
   const login = useSecurityStore((state) => state.login);
   const [username, setUsername] = useState<string>('');
@@ -23,7 +19,7 @@ const LoginScreen: React.VFC<LoginProps> = () => {
     setErrorMessage('');
     try {
       await login({ username, password });
-      navigate(Paths.products);
+      navigate(Paths.buyerProducts);
     } catch (e: any) {
       if (e.response.status === 400) {
         setErrorMessage('Invalid username or password');
@@ -31,10 +27,10 @@ const LoginScreen: React.VFC<LoginProps> = () => {
         setErrorMessage(e.message);
       }
     }
-  }, [username, password]);
+  }, [login, username, password, navigate]);
 
   if (isLoggedIn) {
-    return <Navigate to={Paths.products} replace/>;
+    return <Navigate to={Paths.home} replace/>;
   }
 
   return (

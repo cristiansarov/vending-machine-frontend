@@ -6,7 +6,7 @@ import {
 } from 'react-router-dom';
 import { useSecurityStore } from './modules/security/security.store';
 import { routes } from './routes';
-import ProtectedRoute from './modules/security/components/ProtectedRoute/ProtectedRoute';
+import AuthenticatedRoute from './modules/security/components/AuthenticatedRoute/AuthenticatedRoute';
 
 const App: React.VFC = () => {
   const [loaded, setLoaded] = useState(false);
@@ -20,11 +20,11 @@ const App: React.VFC = () => {
   return (
     <Router>
       <Routes>
-        {routes.map(({ component: Component, isProtected, ...route }) => (
+        {routes.map(({ component: Component, authenticated, ...route }) => (
           <Route
             key={route.path}
             {...route}
-            element={isProtected ? <ProtectedRoute><Component/></ProtectedRoute> : <Component/>}
+            element={authenticated ? <AuthenticatedRoute {...authenticated}><Component/></AuthenticatedRoute> : <Component/>}
           />
         ))}
       </Routes>

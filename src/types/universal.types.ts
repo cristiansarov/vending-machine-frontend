@@ -14,6 +14,8 @@ export interface ULoginResponse {
 export interface UCurrentUser {
   id: number;
   username: string;
+  deposit: number;
+  role: UserRoles;
 }
 
 
@@ -50,4 +52,9 @@ export interface UBuyRequest {
 
 export interface UWithdrawResponse {
   coinsReturned: number[];
+}
+
+export enum UserRoles {
+  buyer = 'buyer',
+  seller = 'seller',
 }

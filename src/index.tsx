@@ -8,6 +8,7 @@ import axios from 'axios';
 axios.defaults.baseURL = 'http://localhost:3001';
 axios.defaults.withCredentials = true
 axios.interceptors.response.use(v=>v , (e) => {
+  if (e.response?.data?.statusCode === 401) return Promise.reject(e);
   alert(e.response?.data?.message || e.message);
   return Promise.reject(e);
 });

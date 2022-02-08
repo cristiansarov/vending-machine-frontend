@@ -29,18 +29,6 @@ export const useSecurityStore = create<SecurityState>((set, get) => ({
     await get().removeLoginData();
   },
 
-  async storeLoginData() {
-    try {
-      await get().storeCurrentUser();
-    } catch (err: any) {
-      if (err?.response?.status === 401) {
-        get().removeLoginData();
-        return;
-      }
-      throw err;
-    }
-  },
-
   removeLoginData() {
     set({ currentUser: null });
   },
